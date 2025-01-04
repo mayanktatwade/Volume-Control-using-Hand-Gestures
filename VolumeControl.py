@@ -2,8 +2,9 @@ import cv2 as cv
 import time
 import numpy as np
 
-
 import HandDectectionModule as htm
+
+######################################
 
 from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
@@ -11,17 +12,13 @@ devices = AudioUtilities.GetSpeakers()
 interface = devices.Activate(
     IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
 volume = interface.QueryInterface(IAudioEndpointVolume)
-# volume.GetMute()
-# volume.GetMasterVolumeLevel()
 
 #######################################
 
 volRange = volume.GetVolumeRange() #(-96.0, 0.0, 0.125)
-# volume.SetMasterVolumeLevel(0.0, None)
 minVol = volRange[0]
 maxVol = volRange[1]
 volPercent = 0
-
 
 #########################
 wcam, hcam = 640, 480
@@ -75,15 +72,12 @@ while True:
         else:
             vol = vol1
         volume.SetMasterVolumeLevel(vol, None)
-        #print(distance,vol))
 
         #Sound Bar
         cv.rectangle(img,(50,20),(20,480-20),(0,255,0),2)
         temp = np.interp(vol,[minVol,maxVol],[0,440])
         volPercent = np.interp(vol,[minVol,maxVol],[0,100])
         cv.rectangle(img,(50,int(460-temp)),(20,460),(0,255,0),-1)
-        # print(460-temp)
-
 
 
     #To get the Frame rate
@@ -97,6 +91,6 @@ while True:
                cv.FONT_HERSHEY_COMPLEX,1,(255,0,0),2)
     cv.putText(img, str(int(volPercent)) + '%', (wcam-150,50),
                cv.FONT_HERSHEY_COMPLEX,1,(0,255,0),2)
-    cv.imshow('image',img)
+    cv.imshow('Volume Control',img)
     cv.waitKey(1)
 
